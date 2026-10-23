@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-contests}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-contests}
+      POSTGRES_DB: ${POSTGRES_DB:-contests}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-contests} -d ${POSTGRES_DB:-contests}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Локальный «перехватчик» писем: письма не уходят наружу, их видно на http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-contests}:${POSTGRES_PASSWORD:-contests}@db:5432/${POSTGRES_DB:-contests}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      DATA_DIR: /data
+    volumes:
+      - appdata:/data
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  appdata:

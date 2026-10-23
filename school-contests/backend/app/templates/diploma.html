@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Диплом {{ number }}</title>
+<style>
+  /* Шаблон диплома. Размер — A4 альбомная. Переменные Jinja: full_name, event_title, subject, level,
+     result_label, place_text, score, date, number, qr, school, verify_url, team_name */
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; width: 297mm; height: 210mm; background: #f6f0e4; color: #1f2a44;
+    font-family: "Liberation Serif", "DejaVu Serif", "Times New Roman", serif;
+  }
+  .frame-outer { position: absolute; left: 9mm; top: 9mm; right: 9mm; bottom: 9mm; border: 2.2mm solid #1f2a44; }
+  .frame-inner { position: absolute; left: 14mm; top: 14mm; right: 14mm; bottom: 14mm; border: 0.6mm solid #b5472f; }
+  .content { position: absolute; left: 24mm; right: 24mm; top: 24mm; bottom: 24mm; text-align: center; }
+  .school { font-size: 13pt; letter-spacing: 0.35em; text-transform: uppercase; color: #b5472f; margin-top: 2mm; }
+  .rule { width: 60mm; height: 0; border-top: 0.5mm solid #b5472f; margin: 5mm auto; }
+  h1 { font-size: 46pt; font-weight: bold; letter-spacing: 0.12em; text-transform: uppercase; margin: 2mm 0 0 0; }
+  .kind { font-size: 17pt; font-style: italic; margin: 1mm 0 7mm 0; }
+  .awarded { font-size: 13pt; margin-bottom: 3mm; }
+  .name { font-size: 30pt; font-weight: bold; border-bottom: 0.4mm solid #1f2a44; display: inline-block;
+          padding: 0 10mm 1.5mm 10mm; margin-bottom: 6mm; }
+  .team { font-size: 12pt; color: #5a6480; margin: -3mm 0 4mm 0; }
+  .text { font-size: 15pt; line-height: 1.5; margin: 0 auto; width: 205mm; }
+  .event { font-weight: bold; }
+  .footer { position: absolute; left: 0; right: 0; bottom: 0; height: 32mm; }
+  .footer .left { position: absolute; left: 0; bottom: 0; text-align: left; font-size: 11pt; line-height: 1.5; }
+  .footer .right { position: absolute; right: 0; bottom: 0; text-align: right; font-size: 9pt; line-height: 1.4; }
+  .footer img { width: 27mm; height: 27mm; display: block; margin: 0 0 1mm auto; }
+  .num { font-family: "DejaVu Sans Mono", monospace; font-size: 11pt; }
+</style>
+</head>
+<body>
+  <div class="frame-outer"></div>
+  <div class="frame-inner"></div>
+  <div class="content">
+    <div class="school">{{ school }}</div>
+    <div class="rule"></div>
+    <h1>Диплом</h1>
+    <div class="kind">{{ result_label }}</div>
+    <div class="awarded">награждается</div>
+    <div class="name">{{ full_name }}</div>
+    {% if team_name %}<div class="team">в составе команды «{{ team_name }}»</div>{% endif %}
+    <div class="text">
+      {{ place_text }} в {{ level|lower }} конкурсе
+      <span class="event">«{{ event_title }}»</span>
+      по предмету «{{ subject }}»{% if score is not none %}, набрано баллов: {{ score }}{% endif %}.
+    </div>
+    <div class="footer">
+      <div class="left">
+        Дата: {{ date }}<br>
+        Номер: <span class="num">{{ number }}</span>
+      </div>
+      <div class="right">
+        <img src="{{ qr }}" alt="QR">
+        Проверка подлинности:<br>{{ verify_url }}
+      </div>
+    </div>
+  </div>
+</body>
+</html>
